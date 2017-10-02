@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Filmes</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+
+<h1>Visualização de Dados - Trabalho 25/09/2017</h1>
+
+<div id="chart1"><h2>Filmes por Bilheteria</h2></div>
+
+<div id="chart2"><h2>Filmes por Orçamento</h2></div>
+
+<div id="chart3"><h2>Filmes por Lucro</h2></div>
+
+<script type="text/javascript">
+    function render(data, comparator, divId, funcTipoBarra, corBarra, funcTexto) {
+        d3.select(divId).selectAll("div.h-bar")
+                .data(data)
+            .enter().append("div")
+            .attr("class", "h-bar")
+            .append("span");
+        
+        
+        
+        d3.select(divId).selectAll("div.h-bar")
+                .data(data)
+            .attr("class", "h-bar")
+            .style("width", funcTipoBarra)
+            .style("background-color", corBarra)
+            .select("span")
+                .style("font-weight", "bold")
+                .text(funcTexto);
+         if(comparator)
+            d3.select(divId)
+                .selectAll("div.h-bar") 
+                .sort(comparator);
+    }
+
+    var comparePorBilheteria = function (a, b) { 
+        return a.Worldwide_Gross_M < b.Worldwide_Gross_M?1:-1;
+    };
+
+    var comparePorOrcamento = function (a, b) { 
+        return a.Budget_M < b.Budget_M?1:-1;
+    };
+
+    var comparePorLucro = function (a, b) {
+        Lucro_a = a.Worldwide_Gross_M - a.Budget_M;
+        Lucro_b = b.Worldwide_Gross_M - b.Budget_M; 
+        return Lucro_a < Lucro_b?1:-1;
+    };
+
+    var barraBilheteria = function (d) {
+        return (d.Worldwide_Gross_M * 0.6) + "px";
+    }
+
+    var barraOrcamento = function (d) {
+        return (d.Budget_M * 4) + "px";
+    }
+
+    var barraLucro = function (d) {
+        return ((d.Worldwide_Gross_M - d.Budget_M) * 0.7) + "px";
+    }
+
+    var textoFilme = function (d) {
+        return d.Film;
+    }
+    
+    d3.json("movies.json", function(error, json){ 
+        render(json, comparePorBilheteria, "#chart1", barraBilheteria, "#92a8d1", textoFilme);
+        render(json, comparePorOrcamento, "#chart2", barraOrcamento, "#b1869f", textoFilme);
+        render(json, comparePorLucro, "#chart3", barraLucro, "#b7be98", textoFilme);
+    });
+</script>
+</body>
+</html>
