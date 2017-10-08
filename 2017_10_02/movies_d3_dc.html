@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bilheteria de Filmes</title>
+    <link rel="stylesheet" href="css/dc.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/dc.js" charset="utf-8"></script>
+
+</head>
+<body>
+	
+	<div id="bar_ano"><h1> Total de bilheteria por ano</h1></div>
+	
+	<div id="bar_gen"><h1> Total de bilheteria por gênero de filme</h1></div>
+	
+	<script type="text/javascript">
+
+	var barraAno = dc.barChart('#bar_ano');
+	var barraGenero = dc.barChart('#bar_gen');
+	
+	d3.json("movies.json", function(data){
+
+		data.forEach(function(d){
+
+			d.Worldwide_Gross_M = +d.Worldwide_Gross_M;
+			
+		});
+
+		var facts = crossfilter(data);
+
+		var dateYearDim = facts.dimension(function(d){
+                return d.Year;
+        });
+
+        var genreDim = facts.dimension(function(d){
+                return d.Genre;
+        });
+
+        var grossByYearGroup = dateYearDim.group().reduceSum(function(d){
+                return d.Worldwide_Gross_M;
+        });
+
+        var grossByGenreGroup = genreDim.group().reduceSum(function(d){
+                return d.Worldwide_Gross_M;
+        });
+
+        barraAno.width(600)
+        	.height(400)
+        	.margins({top: 50, right: 50, bottom: 25, left: 40})
+        	.x(d3.scale.ordinal())
+        	.xUnits(dc.units.ordinal)
+        	.dimension(dateYearDim)
+        	.group(grossByYearGroup)
+        	.ordinalColors(['#28264b']);
+
+        barraGenero.width(600)
+        	.height(400)
+        	.margins({top: 50, right: 50, bottom: 25, left: 40})
+        	.x(d3.scale.ordinal())
+        	.xUnits(dc.units.ordinal)
+        	.dimension(genreDim)
+        	.group(grossByGenreGroup)
+            .ordinalColors(['#88b04b']);
+
+        dc.renderAll();
+
+	});
+	</script>
+</body>
+</html>
