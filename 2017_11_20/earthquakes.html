@@ -253,7 +253,7 @@
               markerLayer.eachLayer(function(layer) {
                 if( map.getBounds().contains(layer.getLatLng()) ){
                   //add layer.publicid to some array visibleMarkers
-                  visibleMarkers[i] = layer.publicid;
+                  visibleMarkers[mc] = layer.publicid;
                   mc = mc + 1;
                 }
               });
